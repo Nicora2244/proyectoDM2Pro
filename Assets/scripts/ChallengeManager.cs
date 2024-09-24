@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // Para reiniciar la escena
+using UnityEngine.SceneManagement; // Para cambiar de escena
 
 public class ChallengeManager : MonoBehaviour
 {
@@ -37,19 +37,26 @@ public class ChallengeManager : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void ObjectScored()
     {
-        if (other.CompareTag("Throwable") && challengeActive)
-        {
-            objectsScored++;
-            UpdateChallengeText();
+        // Incrementar el contador de objetos encestados
+        objectsScored++;
+        UpdateChallengeText();
 
-            if (objectsScored >= totalObjectsToScore)
-            {
-                challengeText.text = "¡Reto completado!";
-                challengeActive = false;
-            }
+        // Verificar si se ha completado el reto con 3 objetos encestados
+        if (objectsScored >= totalObjectsToScore)
+        {
+            challengeText.text = "¡Reto completado!";
+            challengeActive = false;
+            StartCoroutine(CompleteChallenge()); // Iniciar la corutina para esperar y cambiar de escena
         }
+    }
+
+    IEnumerator CompleteChallenge()
+    {
+        yield return new WaitForSeconds(3); // Esperar 3 segundos
+        // Cargar la siguiente escena en el orden de Build Settings
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     void LoseChallenge()
@@ -71,4 +78,3 @@ public class ChallengeManager : MonoBehaviour
         challengeText.text = "Objetos encestados: " + objectsScored + "/" + totalObjectsToScore;
     }
 }
-
